@@ -14,7 +14,6 @@ remove(list = ls())
 # Import Libraries
 ################################
 library(ggplot2)
-library(wesanderson)
 
 ################################
 # Read Data
