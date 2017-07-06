@@ -64,8 +64,8 @@ pdf("chickWeight.pdf")
 
 p <- ggplot(data = data, aes(x = Day, y = Weight (g), group=Run)) + 
   geom_line(aes(y = Mean.Weight, color = Run)) +
-  geom_abline(mapping = NULL, data = NULL, colour = "black", size = 1, slope = 1.375, intercept = 3.625) + 
-  annotate("text", x = 13, y = 32.5, label = "Expected growth curve (Martens and Goossen 2008)")
+  geom_abline(mapping = NULL, data = NULL, colour = "black", size = 2, slope = 1.375, intercept = 3.625)
+  #+ annotate("text", x = 13, y = 4, label = "Expected growth curve (Martens and Goossen 2008)")
 
 print(p)
 dev.off()
