@@ -22,21 +22,30 @@ library(ggplot2)
 # Create empty data frame to bind data to
 data <- data.frame(Day=integer(),
                  Num.Chicks=integer(),
-                 c1=double(),
-                 c2=double(),
-                 c3=double(),
-                 c4=double(),
+                 Weight=character(),
                  Mean.Weight=double(),
                  Run=integer(),
                  stringsAsFactors=FALSE)
 
-# Number of files to read in
-numFiles <- 8
-for (i in 1:numFiles)
+dateDirs <- list.files("model-output")
+for (i in 1:length(dateDirs))
 {
-  temp <- read.csv(paste("testResultsNoHumans", i, ".csv", sep=""), header = FALSE)
+  runDirs <- list.files(paste("model-output/", dateDirs[i], sep=""))
+  for (j in 1:length(runDirs))
+  {
+    temp <- data.frame(read.csv(paste("model-output/", dateDirs[i], "/", runDirs[j], "/chickWeights.csv", sep="")))
+    
+  }
+}
+
+
+# Number of files to read in
+numFiles <- 2
+for (i in 0:numFiles)
+{
+  temp <- data.frame(read.csv(paste("05-07-2017/run", i, "/chickWeights.csv", sep="")))
   temp$Run <- i
-  names(temp)<-c("Day", "Num.Chicks", "c1", "c2", "c3", "c4", "Mean.Weight", "Run")
+  names(temp)<-c("Day", "Num.Chicks", "Weight", "Mean.Weight", "Run")
   data <- rbind(data, temp)
 }
 
@@ -44,9 +53,6 @@ for (i in 1:numFiles)
 # Plot
 ################################
 ggplot(data = data, aes(x = Day, y = Weight (g), group=Run)) + 
-  geom_line(aes(y = data[3], color = Run)) + 
-  geom_line(aes(y = data[4], colour = Run)) + 
-  geom_line(aes(y = data[5], colour = Run)) + 
-  geom_line(aes(y = data[6], colour = Run)) + 
+  geom_line(aes(y = Mean.Weight, color = Run)) +
   geom_abline(mapping = NULL, data = NULL, colour = "black", size = 1, slope = 1.375, intercept = 3.625) + 
   annotate("text", x = 13, y = 32.5, label = "Expected growth curve (Martens and Goossen 2008)")
