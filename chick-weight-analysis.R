@@ -2,7 +2,8 @@
 # Brandon Edwards
 # melodus-analysis
 # chick-weight-by-day.R
-# July 2017
+# Created June 2017
+# Last Updated July 2017
 #####################################
 
 #####################################
