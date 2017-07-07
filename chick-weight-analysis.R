@@ -77,11 +77,12 @@ dataSummary <- data.frame(Day = day, Mean.Weight = mean, STDDEV.Neg = stddev.neg
 #####################################
 
 p <- ggplot() +
-  theme(plot.title = element_text(size = 16, face = "bold"), axis.title = element_text(size = 12, face = "bold")) + 
+  theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
+        axis.text = element_text(size = 12)) + 
   labs(title = "Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
   geom_line(data = data, aes(x = Day, y = Mean.Weight, group=Run), size = 0.33, alpha = 0.5) +
-  geom_abline(mapping = NULL, data = NULL, colour = "red", size = 1, slope = 1.375, intercept = 3.625) +
-  annotate("text", x = 20, y = 20, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
+  geom_abline(mapping = NULL, data = NULL, colour = "red", size = 2, slope = 1.375, intercept = 3.625) +
+  annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
 
 png("meanSimChickWeight.png", width = 10, height = 7, units = "in", res = 300)
 print(p)
@@ -91,14 +92,14 @@ dev.off()
 # Plot Mean Time Series
 #####################################
 
-p <- ggplot(data = dataSummary) +
-  theme(plot.title = element_text(size = 14, face = "bold"), axis.title = element_text(size = 12, face = "bold")) + 
+p <- ggplot() +
+  theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
+        axis.text = element_text(size = 12)) +
   labs(title = "Grand Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") +
+  geom_abline(mapping = NULL, data = NULL, colour = "red", size = 1, slope = 1.375, intercept = 3.625) +
   geom_line(data = dataSummary, aes(x = Day, y= Mean.Weight), size = 1.5, colour = "blue") +
-  geom_ribbon(aes(x = Day, ymax = STDDEV.Pos, ymin = STDDEV.Neg), alpha = 0.5) +
-  annotate("text", x = 20, y = 20, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
-  #+ geom_abline(mapping = NULL, data = NULL, colour = "red", size = 1, slope = 1.375, intercept = 3.625)
-
+  geom_ribbon(data = dataSummary, aes(x = Day, ymax = STDDEV.Pos, ymin = STDDEV.Neg), alpha = 0.5) +
+  annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
 png("meanTimeSeries.png", width = 10, height = 7, units = "in", res = 300)
 print(p)
 dev.off()
