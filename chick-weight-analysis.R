@@ -76,10 +76,10 @@ dataSummary <- data.frame(Day = day, Mean.Weight = mean, STDDEV.Neg = stddev.neg
 # Plot Mean Simulated Chick Weights
 #####################################
 
-png("meanSimChickWeight.png", width = 1100, height = 1000)
+png("meanSimChickWeight.png", width = 10, height = 7, units = "in", res = 300)
 
 p <- ggplot() +
-  theme(plot.title = element_text(size = 30, face = "bold"), axis.title = element_text(size = 20, face = "bold")) + 
+  theme(plot.title = element_text(size = 16, face = "bold"), axis.title = element_text(size = 12, face = "bold")) + 
   labs(title = "Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
   geom_line(data = data, aes(x = Day, y = Mean.Weight, group=Run), size = 0.33, alpha = 0.5) +
   geom_abline(mapping = NULL, data = NULL, colour = "red", size = 1, slope = 1.375, intercept = 3.625) +
@@ -92,10 +92,10 @@ dev.off()
 # Plot Mean Time Series
 #####################################
 
-png("meanTimeSeries.png", width = 1100, height = 1000)
+png("meanTimeSeries.png", width = 10, height = 7, units = "in", res = 300)
 
 p <- ggplot(data = dataSummary) +
-  theme(plot.title = element_text(size = 30, face = "bold"), axis.title = element_text(size = 20, face = "bold")) + 
+  theme(plot.title = element_text(size = 14, face = "bold"), axis.title = element_text(size = 12, face = "bold")) + 
   labs(title = "Grand Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") +
   geom_line(data = dataSummary, aes(x = Day, y= Mean.Weight), size = 1.5, colour = "blue") +
   geom_ribbon(aes(x = Day, ymax = STDDEV.Pos, ymin = STDDEV.Neg), alpha = 0.5) +
