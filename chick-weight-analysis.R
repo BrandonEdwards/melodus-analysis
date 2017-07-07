@@ -1,7 +1,7 @@
 #####################################
 # Brandon Edwards
 # melodus-analysis
-# chick-weight-by-day.R
+# chick-weight-analysis.R
 # Created June 2017
 # Last Updated July 2017
 #####################################
@@ -76,8 +76,6 @@ dataSummary <- data.frame(Day = day, Mean.Weight = mean, STDDEV.Neg = stddev.neg
 # Plot Mean Simulated Chick Weights
 #####################################
 
-png("meanSimChickWeight.png", width = 10, height = 7, units = "in", res = 300)
-
 p <- ggplot() +
   theme(plot.title = element_text(size = 16, face = "bold"), axis.title = element_text(size = 12, face = "bold")) + 
   labs(title = "Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
@@ -85,14 +83,13 @@ p <- ggplot() +
   geom_abline(mapping = NULL, data = NULL, colour = "red", size = 1, slope = 1.375, intercept = 3.625) +
   annotate("text", x = 20, y = 20, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
 
+png("meanSimChickWeight.png", width = 10, height = 7, units = "in", res = 300)
 print(p)
 dev.off()
 
 #####################################
 # Plot Mean Time Series
 #####################################
-
-png("meanTimeSeries.png", width = 10, height = 7, units = "in", res = 300)
 
 p <- ggplot(data = dataSummary) +
   theme(plot.title = element_text(size = 14, face = "bold"), axis.title = element_text(size = 12, face = "bold")) + 
@@ -101,5 +98,7 @@ p <- ggplot(data = dataSummary) +
   geom_ribbon(aes(x = Day, ymax = STDDEV.Pos, ymin = STDDEV.Neg), alpha = 0.5) +
   annotate("text", x = 20, y = 20, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
   #+ geom_abline(mapping = NULL, data = NULL, colour = "red", size = 1, slope = 1.375, intercept = 3.625)
+
+png("meanTimeSeries.png", width = 10, height = 7, units = "in", res = 300)
 print(p)
 dev.off()
