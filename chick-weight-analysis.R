@@ -106,10 +106,10 @@ p <- ggplot() +
   labs(title = "(a) Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
   geom_point(data = data, aes(x = Day, y = Mean.Weight, group=Run, colour = "Simulated"), size = 0.5, alpha = 0.5) +
   geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, colour = "Mean Simulated"), size = 2) +
-  geom_line(data = growth, aes(x = Day, y = Gompertz, colour = "Gompertz Expected")) +
-  geom_line(data = growth, aes(x = Day, y = Logistic, colour = "Logistic Expected")) +
+  geom_line(data = growth, aes(x = Day, y = Gompertz, colour = "Gompertz Expected"), size = 1.25) +
+  geom_line(data = growth, aes(x = Day, y = Logistic, colour = "Logistic Expected"), size = 1.25) +
   annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = "")) + 
-  scale_color_manual(name = "", values=c("red", "green3", "black", "blue"))
+  scale_color_manual(name = "", values=c("red", "blue", "black", "green3"))
 
 png("meanSimChickWeight.png", width = 10, height = 7, units = "in", res = 300)
 print(p)
