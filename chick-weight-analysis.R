@@ -47,6 +47,19 @@ for (i in 1:length(dateDirs))
 }
 
 #####################################
+# Create Expected Growth Curve
+#####################################
+
+# From Martens and Goossen 2008
+K <- 0.084
+I <- 11.271
+A <- 53.4
+
+growth <- data.frame(Day = c(1:31))
+
+growth$Expected.Weight <- A * exp(1)^(-exp(1)^(-K * (growth$Day - I)))
+
+#####################################
 # Calculate Grand Daily Mean Weights
 #####################################
 day <- NULL
@@ -79,27 +92,13 @@ dataSummary <- data.frame(Day = day, Mean.Weight = mean, STDDEV.Neg = stddev.neg
 p <- ggplot() +
   theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
         axis.text = element_text(size = 12)) + 
-  labs(title = "Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
-  geom_line(data = data, aes(x = Day, y = Mean.Weight, group=Run), size = 0.33, alpha = 0.5) +
-  geom_abline(mapping = NULL, data = NULL, colour = "red", size = 2, slope = 1.375, intercept = 3.625) +
-  annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
+  labs(title = "(a) Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
+  geom_point(data = data, aes(x = Day, y = Mean.Weight, group=Run, colour = "Simulated"), size = 0.5, alpha = 0.5) +
+  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, colour = "Mean Simulated")) +
+  geom_line(data = growth, aes(x = Day, y = Expected.Weight, colour = "Expected")) +
+  annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = "")) + 
+  scale_color_manual(name = "", values=c("red", "blue", "black"))
 
 png("meanSimChickWeight.png", width = 10, height = 7, units = "in", res = 300)
-print(p)
-dev.off()
-
-#####################################
-# Plot Mean Time Series
-#####################################
-
-p <- ggplot() +
-  theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
-        axis.text = element_text(size = 12)) +
-  labs(title = "Grand Mean Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") +
-  geom_abline(mapping = NULL, data = NULL, colour = "red", size = 1, slope = 1.375, intercept = 3.625) +
-  geom_line(data = dataSummary, aes(x = Day, y= Mean.Weight), size = 1.5, colour = "blue") +
-  geom_ribbon(data = dataSummary, aes(x = Day, ymax = STDDEV.Pos, ymin = STDDEV.Neg), alpha = 0.5) +
-  annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = ""))
-png("meanTimeSeries.png", width = 10, height = 7, units = "in", res = 300)
 print(p)
 dev.off()
