@@ -47,3 +47,29 @@ for (i in 1:length(dateDirs))
     data <- rbind(data, temp)
   }
 }
+
+#####################################
+# Create Gompertz Growth Curve
+#####################################
+
+# From Martens and Goossen 2008
+K <- 0.084
+I <- 11.271
+A <- 53.4
+
+growth <- data.frame(Day = c(1:31))
+
+growth$Gompertz <- A * exp(1)^(-exp(1)^(-K * (growth$Day - I)))
+
+#####################################
+# Create Logistic Growth Curve
+#####################################
+
+#From Martens adn Goossen 2008
+K <- 0.129
+I <- 15.890
+A <- 53.4
+
+growth$Logistic <- A / (1 + exp(1)^(-K * (growth$Day - I)))
+
+
