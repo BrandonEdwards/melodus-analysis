@@ -9,6 +9,7 @@
 #####################################
 # Clear Memory
 #####################################
+
 remove(list = ls())
 
 #####################################
@@ -28,6 +29,7 @@ data <- data.frame(Day=integer(),
                    Num.Chicks=integer(),
                    Weight=character(),
                    Mean.Weight=double(),
+                   Anthro = integer(),
                    Run=integer(),
                    stringsAsFactors=FALSE)
 
@@ -41,7 +43,7 @@ for (i in 1:length(dateDirs))
     temp <- data.frame(read.csv(paste("input/", dateDirs[i], "/", runDirs[j], "/chickWeights.csv", sep="")))
     temp$Run <- run
     run <- run + 1
-    names(temp)<-c("Day", "Num.Chicks", "Weight", "Mean.Weight", "Run")
+    names(temp)<-c("Day", "Num.Chicks", "Weight", "Mean.Weight", "Anthro", "Run")
     data <- rbind(data, temp)
   }
 }
