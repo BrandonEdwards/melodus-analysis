@@ -1,7 +1,7 @@
 #####################################
 # Brandon Edwards
 # melodus-analysis
-# chick-weight-analysis.R
+# base-model-analysis.R
 # Created June 2017
 # Last Updated July 2017
 #####################################
@@ -28,6 +28,7 @@ data <- data.frame(Day=integer(),
                  Num.Chicks=integer(),
                  Weight=character(),
                  Mean.Weight=double(),
+                 Anthro=integer(),
                  Run=integer(),
                  stringsAsFactors=FALSE)
 
@@ -41,10 +42,13 @@ for (i in 1:length(dateDirs))
     temp <- data.frame(read.csv(paste("input/", dateDirs[i], "/", runDirs[j], "/chickWeights.csv", sep="")))
     temp$Run <- run
     run <- run + 1
-    names(temp)<-c("Day", "Num.Chicks", "Weight", "Mean.Weight", "Run")
+    names(temp)<-c("Day", "Num.Chicks", "Weight", "Mean.Weight", "Anthro", "Run")
     data <- rbind(data, temp)
   }
 }
+
+#Drop data with anthropogenic effects
+data <- data[ which(data$Anthro == 0), ]
 
 #####################################
 # Create Gompertz Growth Curve
@@ -104,10 +108,10 @@ p <- ggplot() +
   theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
         axis.text = element_text(size = 14), legend.text = element_text(size = 14)) + 
   labs(title = "Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
-  geom_point(data = data, aes(x = Day, y = Mean.Weight, group=Run, colour = "Simulated"), size = 0.5, alpha = 0.5) +
-  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, colour = "Mean Simulated"), size = 2) +
   geom_line(data = growth, aes(x = Day, y = Gompertz, colour = "Gompertz Expected"), size = 1.25) +
   geom_line(data = growth, aes(x = Day, y = Logistic, colour = "Logistic Expected"), size = 1.25) +
+  geom_point(data = data, aes(x = Day, y = Mean.Weight, group=Run, colour = "Simulated"), size = 0.5, alpha = 0.5) +
+  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, colour = "Mean Simulated"), size = 2) +
   annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = "")) + 
   scale_color_manual(name = "", values=c("red", "blue", "black", "green3"))
 
