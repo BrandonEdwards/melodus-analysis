@@ -72,4 +72,48 @@ A <- 53.4
 
 growth$Logistic <- A / (1 + exp(1)^(-K * (growth$Day - I)))
 
+#####################################
+# Calculate Grand Daily Mean Weights
+#####################################
+day <- NULL
+anthro <- NULL
+mean <- NULL
+stddev.pos <- NULL
+stddev.neg <- NULL
 
+for (i in unique(data$Day))
+{
+  temp <- data[ which(data$Day == i), ]
+  for (j in unique(temp$Anthro))
+  {
+    temp2 <- temp[ which(temp$Anthro == j), ]
+    n <- sum(temp2$Num.Chicks)
+    popTotal <- 0
+    for (k in 1:nrow(temp2))
+    {
+      popTotal <- popTotal + (temp2$Mean.Weight[k] * temp2$Num.Chicks[k])
+    }
+    
+    day <- c(day, i)
+    anthro <- c(anthro, j)
+    mean <- c(mean, (popTotal/n))
+    stddev.pos <- c(stddev.pos, ((popTotal/n) + sd(temp2$Mean.Weight)))
+    stddev.neg <- c(stddev.neg, ((popTotal/n) - sd(temp2$Mean.Weight)))    
+  }
+}
+
+dataSummary <- data.frame(Day = day, Anthro = anthro, Mean.Weight = mean, STDDEV.Neg = stddev.neg, STDDEV.Pos = stddev.pos)
+
+#####################################
+# Plot Mean Simulated Chick Weights
+#####################################
+
+p <- ggplot() +
+  theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
+        axis.text = element_text(size = 14), legend.text = element_text(size = 14)) + 
+  labs(title = "Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") +
+  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, group = as.factor(Anthro), colour = as.factor(Anthro)), size = 2)
+
+png("meanSimChickWeightAnthro.png", width = 10, height = 7, units = "in", res = 300)
+print(p)
+dev.off()
