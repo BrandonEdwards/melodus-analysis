@@ -113,11 +113,11 @@ dataSummary$Anthro <- as.factor(dataSummary$Anthro)
 #####################################
 
 p <- ggplot() +
-  theme(plot.title = element_text(size = 30, family = "Franklin Gothic Medium Cond"), 
-        axis.title = element_text(size = 20, family = "Franklin Gothic Medium Cond"),
-        axis.text = element_text(size = 18, family = "Franklin Gothic Medium Cond"), 
-        legend.title = element_text(size = 20, family = "Franklin Gothic Medium Cond"), 
-        legend.text = element_text(size = 18, family = "Franklin Gothic Medium Cond"), 
+  theme(plot.title = element_text(size = 30, face = "bold", family = "Franklin Gothic Book"), 
+        axis.title = element_text(size = 20, family = "Franklin Gothic Book"),
+        axis.text = element_text(size = 18, family = "Franklin Gothic Book"), 
+        legend.title = element_text(size = 20, family = "Franklin Gothic Book"), 
+        legend.text = element_text(size = 18, family = "Franklin Gothic Book"), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         panel.background = element_blank(), 
