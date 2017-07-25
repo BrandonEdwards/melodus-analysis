@@ -17,8 +17,12 @@ remove(list = ls())
 #####################################
 
 #install.packages("ggplot2")
+#install.packages("extrafont")
 
 library(ggplot2)
+library(extrafont)
+font_import(pattern="FRAMDCN")
+y
 
 #####################################
 # Read Data
@@ -103,17 +107,25 @@ for (i in unique(data$Day))
 }
 
 dataSummary <- data.frame(Day = day, Anthro = anthro, Mean.Weight = mean, STDDEV.Neg = stddev.neg, STDDEV.Pos = stddev.pos)
-
+dataSummary$Anthro <- as.factor(dataSummary$Anthro)
 #####################################
 # Plot Mean Simulated Chick Weights
 #####################################
 
 p <- ggplot() +
-  theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
-        axis.text = element_text(size = 14), legend.text = element_text(size = 14)) + 
-  labs(title = "Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") +
-  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, group = as.factor(Anthro), colour = as.factor(Anthro)), size = 2)
+  theme(plot.title = element_text(size = 30, family = "Franklin Gothic Medium Cond"), 
+        axis.title = element_text(size = 20, family = "Franklin Gothic Medium Cond"),
+        axis.text = element_text(size = 18, family = "Franklin Gothic Medium Cond"), 
+        legend.title = element_text(size = 20, family = "Franklin Gothic Medium Cond"), 
+        legend.text = element_text(size = 18, family = "Franklin Gothic Medium Cond"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) + 
+  labs(title = "Simulated Chick Weights With 100m Nest Exclosure", x = "Day", y = "Weight (g)") +
+  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, group = Anthro, colour = Anthro), size = 2)+
+  scale_color_manual(name = "Anthro Level (%)", values=c("black", "#E41A1C", "green3"), labels = c("Base Model", "20", "40"))
 
-png("meanSimChickWeightAnthro.png", width = 10, height = 7, units = "in", res = 300)
+png("meanSimChickWeightAnthro.png", width = 10.5, height = 6, units = "in", res = 300)
 print(p)
 dev.off()

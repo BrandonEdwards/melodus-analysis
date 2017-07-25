@@ -16,8 +16,13 @@ remove(list = ls())
 #####################################
 
 #install.packages("ggplot2")
+#install.packages("extrafont")
 
 library(ggplot2)
+library(extrafont)
+font_import(pattern="FRAMDCN")
+y
+
 
 #####################################
 # Read Data
@@ -105,16 +110,21 @@ dataSummary <- data.frame(Day = day, Mean.Weight = mean, STDDEV.Neg = stddev.neg
 #####################################
 
 p <- ggplot() +
-  theme(plot.title = element_text(size = 20, face = "bold"), axis.title = element_text(size = 16, face = "bold"),
-        axis.text = element_text(size = 14), legend.text = element_text(size = 14)) + 
+  theme(plot.title = element_text(size = 30, family = "Franklin Gothic Medium Cond"), 
+        axis.title = element_text(size = 20, family = "Franklin Gothic Medium Cond"),
+        axis.text = element_text(size = 18, family = "Franklin Gothic Medium Cond"), 
+        legend.title = element_text(size = 20, family = "Franklin Gothic Medium Cond"), 
+        legend.text = element_text(size = 18, family = "Franklin Gothic Medium Cond"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) + 
   labs(title = "Simulated Chick Weights vs. Expected Chick Weights", x = "Day", y = "Weight (g)") + 
-  geom_line(data = growth, aes(x = Day, y = Gompertz, colour = "Gompertz Expected"), size = 1.25) +
-  geom_line(data = growth, aes(x = Day, y = Logistic, colour = "Logistic Expected"), size = 1.25) +
+  geom_line(data = growth, aes(x = Day, y = Gompertz, colour = "Expected"), size = 1.25) +
   geom_point(data = data, aes(x = Day, y = Mean.Weight, group=Run, colour = "Simulated"), size = 0.5, alpha = 0.5) +
   geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, colour = "Mean Simulated"), size = 2) +
-  annotate("text", x = 20, y = 20, size = 6, label = paste("n = ", length(unique(data$Run)), " simulations", sep = "")) + 
-  scale_color_manual(name = "", values=c("red", "blue", "black", "green3"))
+  scale_color_manual(name = "", values=c("red","black", "green3"))
 
-png("meanSimChickWeight.png", width = 10, height = 7, units = "in", res = 300)
+png("meanSimChickWeight.png", width = 12, height = 6, units = "in", res = 300)
 print(p)
 dev.off()
