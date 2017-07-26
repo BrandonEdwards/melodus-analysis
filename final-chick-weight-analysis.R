@@ -106,10 +106,10 @@ p <- ggplot() +
         panel.grid.minor = element_blank(), 
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black")) + 
-  labs(title = "Interaction Plot", x = "Anthropogenic Level (%)", y = "Weight (g)") +
+  labs(title = "Interaction of Anthro Level and Exclosures", x = "Anthropogenic Level (%)", y = "Weight (g)") +
   geom_line(data = dataSummary, aes(x = Anthro, y = Mean.Weight, group = Exclosure, colour = Exclosure), size = 2)+
   scale_color_manual(name = "Exclosure Level", values=c("black", "#E41A1C", "green3"), labels = c("100m Exclosure", " No Exclosure"))
 
-png("interactionPlot.png", width = 10.5, height = 6, units = "in", res = 300)
+png("interactionPlot.png", width = 10.5, height = 4.5, units = "in", res = 300)
 print(p)
 dev.off()
