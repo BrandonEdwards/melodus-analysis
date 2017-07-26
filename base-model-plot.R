@@ -125,6 +125,6 @@ p <- ggplot() +
   geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, colour = "Mean Simulated"), size = 2) +
   scale_color_manual(name = "", values=c("red","black", "green3"))
 
-png("meanSimChickWeight.png", width = 12, height = 6, units = "in", res = 300)
+png("baseModelChickWeight.png", width = 12, height = 6, units = "in", res = 300)
 print(p)
 dev.off()
