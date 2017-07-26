@@ -16,6 +16,10 @@ remove(list = ls())
 # Import Libraries and Files
 #####################################
 
+#include.packages("ggplot2")
+
+library(ggplot2)
+
 #####################################
 # Import Non-Exclosure Data
 #####################################
@@ -59,32 +63,53 @@ data <- data[ which(data$Day == 31), ]
 #####################################
 # Calculate Grand Daily Mean Weights
 #####################################
-day <- NULL
 anthro <- NULL
+exclosure <- NULL
 mean <- NULL
 stddev.pos <- NULL
 stddev.neg <- NULL
 
-for (i in unique(data$Day))
+for (i in unique(data$Anthro))
 {
-  temp <- data[ which(data$Day == i), ]
-  for (j in unique(temp$Anthro))
+  temp <- data[ which(data$Anthro == i), ]
+  for (j in unique(temp$Excl.Rad))
   {
-    temp2 <- temp[ which(temp$Anthro == j), ]
+    temp2 <- temp[ which(temp$Excl.Rad == j), ]
     n <- sum(temp2$Num.Chicks)
     popTotal <- 0
     for (k in 1:nrow(temp2))
     {
       popTotal <- popTotal + (temp2$Mean.Weight[k] * temp2$Num.Chicks[k])
     }
-    
-    day <- c(day, i)
-    anthro <- c(anthro, j)
+    anthro <- c(anthro, i)
+    exclosure <- c(exclosure, j)
     mean <- c(mean, (popTotal/n))
     stddev.pos <- c(stddev.pos, ((popTotal/n) + sd(temp2$Mean.Weight)))
     stddev.neg <- c(stddev.neg, ((popTotal/n) - sd(temp2$Mean.Weight)))    
   }
 }
 
-dataSummary <- data.frame(Day = day, Anthro = anthro, Mean.Weight = mean, STDDEV.Neg = stddev.neg, STDDEV.Pos = stddev.pos)
+dataSummary <- data.frame(Anthro = anthro, Exclosure = exclosure, Mean.Weight = mean, STDDEV.Neg = stddev.neg, STDDEV.Pos = stddev.pos)
 dataSummary$Anthro <- as.factor(dataSummary$Anthro)
+
+#####################################
+# Generate Interaction Plot
+#####################################
+
+p <- ggplot() +
+  theme(plot.title = element_text(size = 30, face = "bold", family = "Franklin Gothic Book"), 
+        axis.title = element_text(size = 20, family = "Franklin Gothic Book"),
+        axis.text = element_text(size = 18, family = "Franklin Gothic Book"), 
+        legend.title = element_text(size = 20, family = "Franklin Gothic Book"), 
+        legend.text = element_text(size = 18, family = "Franklin Gothic Book"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) + 
+  labs(title = "Interaction Plot", x = "Anthropogenic Level (%)", y = "Weight (g)") +
+  geom_line(data = dataSummary, aes(x = Anthro, y = Mean.Weight, group = Exclosure, colour = Exclosure), size = 2)+
+  scale_color_manual(name = "Exclosure Level", values=c("black", "#E41A1C", "green3"), labels = c("100m Exclosure", " No Exclosure"))
+
+png("interactionPlot.png", width = 10.5, height = 6, units = "in", res = 300)
+print(p)
+dev.off()
