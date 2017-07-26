@@ -122,10 +122,10 @@ p <- ggplot() +
         panel.grid.minor = element_blank(), 
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black")) + 
-  labs(title = "Simulated Chick Weights With 100m Nest Exclosure", x = "Day", y = "Weight (g)") +
-  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, group = Anthro, colour = Anthro), size = 2)+
-  scale_color_manual(name = "Anthro Level (%)", values=c("black", "#E41A1C", "green3"), labels = c("Base Model", "20", "40"))
+  labs(title = "(a) Anthro Effects with No Exclosure", x = "Day", y = "Weight (g)") +
+  geom_line(data = dataSummary, aes(x = Day, y = Mean.Weight, group = Anthro, colour = Anthro), size = 1.5)+
+  scale_color_manual(name = "Anthro Level (%)", values=c("black", "#66C2A5", "#FC8D62", "#8DA0CB"), labels = c("Base Model", "20", "40", "60"))
 
-png("meanSimChickWeightAnthro.png", width = 10.5, height = 6, units = "in", res = 300)
+png("meanSimChickWeightAnthroNoExclosure.png", width = 10.5, height = 4, units = "in", res = 300)
 print(p)
 dev.off()
