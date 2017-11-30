@@ -21,8 +21,8 @@ remove(list = ls())
 
 library(ggplot2)
 library(extrafont)
-font_import(pattern="FRAMDCN")
-y
+#font_import(pattern="FRAMDCN")
+#y
 
 #####################################
 # Read Data
