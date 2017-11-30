@@ -1,7 +1,7 @@
 #####################################
 # Brandon Edwards
 # melodus-analysis
-# model-fit-bias.R
+# model-fit-analysis.R
 # Created November 2017
 # Last Updated November 2017
 #####################################
