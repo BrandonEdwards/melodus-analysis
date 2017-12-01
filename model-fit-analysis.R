@@ -3,7 +3,7 @@
 # melodus-analysis
 # model-fit-analysis.R
 # Created November 2017
-# Last Updated November 2017
+# Last Updated December 2017
 #####################################
 
 #####################################
@@ -18,6 +18,7 @@ remove(list = ls())
 #install.packages("easynls")
 
 library(easynls)
+library(ggplot2)
 
 #####################################
 # Read Data
@@ -63,22 +64,17 @@ A.Base.RelBias <- A.Base.AbsBias/A.exp
 I.Base.RelBias <- I.Base.AbsBias/I.exp
 K.Base.RelBias <- K.Base.AbsBias/K.exp
 
-baseEstimates <- data.frame(A.Est=double(),
-                     I.Est=double(),
-                     K.Est=double(),
-                     A.AbsBias=double(),
-                     I.AbsBias=double(),
-                     K.AbsBias=double(),
-                     A.RelBias=double(),
-                     I.RelBias=double(),
-                     K.RelBias=double(),
-                     stringsAsFactors = FALSE)
-
 baseEstimates <- cbind(A.Base, I.Base, K.Base, 
                   A.Base.AbsBias, I.Base.AbsBias, K.Base.AbsBias,
                   A.Base.RelBias, I.Base.RelBias, K.Base.RelBias)
 
-write.csv(baseEstimates, "output/fitAnalysis/baseEstimate.csv", row.names = FALSE)
+baseEstimates <- data.frame(baseEstimates)
+
+names(baseEstimates) <- c("A.Est", "I.Est", "K.Est",
+                         "A.AbsBias", "I.AbsBias", "K.AbsBias",
+                         "A.RelBias", "I.RelBias", "K.RelBias")
+
+write.csv(baseEstimates, "output/fitAnalysis/baseEstimatesBias.csv", row.names = FALSE)
 
 
 #####################################
@@ -86,6 +82,8 @@ write.csv(baseEstimates, "output/fitAnalysis/baseEstimate.csv", row.names = FALS
 #####################################
 
 dataNoExclosure <- treatmentData[ which(treatmentData$Excl.Rad == "No Exclosure"), ]
+
+noExclosureEstimates <- NULL
 
 for (anthro in unique(dataNoExclosure$Anthro))
 {
@@ -145,13 +143,28 @@ for (anthro in unique(dataNoExclosure$Anthro))
     
   }
   
+  noExclosureEstimates <- cbind(noExclosureEstimates,
+                                eval(parse(text = paste("A.", anthro, ".N", sep = ""))),
+                                eval(parse(text = paste("I.", anthro, ".N", sep = ""))),
+                                eval(parse(text = paste("K.", anthro, ".N", sep = ""))))
+  
 }
+
+noExclosureEstimates <- data.frame(noExclosureEstimates)
+
+names(noExclosureEstimates) <- c("A.20", "I.20", "K.20",
+                                 "A.40", "I.40", "K.40",
+                                 "A.60", "I.60", "K.60")
+
+write.csv(noExclosureEstimates, "output/fitAnalysis/noExclosureEstimates.csv", 
+          row.names = FALSE)
 
 #####################################
 # Exclosure Estimate Generation
 #####################################
 
 dataExclosure <- treatmentData[ which(treatmentData$Excl.Rad == "Exclosure"), ]
+exclosureEstimates <- NULL
 
 for (anthro in unique(dataExclosure$Anthro))
 {
@@ -211,4 +224,22 @@ for (anthro in unique(dataExclosure$Anthro))
     
   }
   
+  exclosureEstimates <- cbind(exclosureEstimates,
+                                eval(parse(text = paste("A.", anthro, ".E", sep = ""))),
+                                eval(parse(text = paste("I.", anthro, ".E", sep = ""))),
+                                eval(parse(text = paste("K.", anthro, ".E", sep = ""))))
+  
 }
+
+exclosureEstimates <- data.frame(exclosureEstimates)
+
+names(exclosureEstimates) <- c("A.20", "I.20", "K.20",
+                                 "A.40", "I.40", "K.40",
+                                 "A.60", "I.60", "K.60")
+
+write.csv(exclosureEstimates, "output/fitAnalysis/exclosureEstimates.csv", 
+          row.names = FALSE)
+
+#####################################
+# Statistical Tests
+#####################################
