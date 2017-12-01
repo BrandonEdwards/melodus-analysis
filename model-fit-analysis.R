@@ -20,7 +20,14 @@ remove(list = ls())
 library(easynls)
 
 #####################################
-# Set Constants and Read Data
+# Read Data
+#####################################
+
+baseData <- read.csv("baseDataSet.csv")
+treatmentData <- read.csv("treatmentDataSet.csv")
+
+#####################################
+# Set Constants
 #####################################
 
 # From Martens and Goossen 2008
@@ -28,29 +35,180 @@ K.exp <- 0.084
 I.exp <- 11.271
 A.exp <- 53.4
 
-data <- read.csv("C:/Users/brand/Documents/melodus-analysis/baseDataSet.csv")
-
 #####################################
-# Analysis
+# Base Estimate Generation
 #####################################
+A.Base <- NULL
+I.Base <- NULL
+K.Base <- NULL
 
-K.AbsBias <- NULL
-I.AbsBias <- NULL
-A.AbsBias <- NULL
+K.Base.AbsBias <- NULL
+I.Base.AbsBias <- NULL
+A.Base.AbsBias <- NULL
 
-for (i in unique(data$Run))
+for (i in unique(baseData$Run))
 {
-  runData <- data[ which(data$Run == i), ]
-  fit <- nlsfit(runData[c("Day", "Mean.Weight")], model=10, start=c(600,4,0.05))
-  A.AbsBias <- c(A.AbsBias, (fit$Parameters[1,1] - A.exp))
-  I.AbsBias <- c(I.AbsBias, (fit$Parameters[2,1] - I.exp))
-  K.AbsBias <- c(K.AbsBias, (fit$Parameters[3,1] - K.exp))
+  data <- baseData[ which(baseData$Run == i), ]
+  fit <- nlsfit(data[c("Day", "Mean.Weight")], model=10, start=c(200,4,0.05))
+  A.Base <- c(A.Base, fit$Parameters[1,1])
+  I.Base <- c(I.Base, fit$Parameters[2,1])
+  K.Base <- c(K.Base, fit$Parameters[3,1])
+  
+  A.Base.AbsBias <- c(A.Base.AbsBias, (fit$Parameters[1,1] - A.exp))
+  I.Base.AbsBias <- c(I.Base.AbsBias, (fit$Parameters[2,1] - I.exp))
+  K.Base.AbsBias <- c(K.Base.AbsBias, (fit$Parameters[3,1] - K.exp))
 }
 
-A.meanAbsBias <- mean(A.AbsBias)
-I.meanAbsBias <- mean(I.AbsBias)
-K.meanAbsBias <- mean(K.AbsBias)
+A.Base.RelBias <- A.Base.AbsBias/A.exp
+I.Base.RelBias <- I.Base.AbsBias/I.exp
+K.Base.RelBias <- K.Base.AbsBias/K.exp
 
-A.meanRelBias <- mean(A.AbsBias/A.exp)
-I.meanRelBias <- mean(I.AbsBias/I.exp)
-K.meanRelBias <- mean(K.AbsBias/K.exp)
+baseEstimates <- data.frame(A.Est=double(),
+                     I.Est=double(),
+                     K.Est=double(),
+                     A.AbsBias=double(),
+                     I.AbsBias=double(),
+                     K.AbsBias=double(),
+                     A.RelBias=double(),
+                     I.RelBias=double(),
+                     K.RelBias=double(),
+                     stringsAsFactors = FALSE)
+
+baseEstimates <- cbind(A.Base, I.Base, K.Base, 
+                  A.Base.AbsBias, I.Base.AbsBias, K.Base.AbsBias,
+                  A.Base.RelBias, I.Base.RelBias, K.Base.RelBias)
+
+write.csv(baseEstimates, "output/fitAnalysis/baseEstimate.csv", row.names = FALSE)
+
+
+#####################################
+# Non-Exclosure Estimate Generation
+#####################################
+
+dataNoExclosure <- treatmentData[ which(treatmentData$Excl.Rad == "No Exclosure"), ]
+
+for (anthro in unique(dataNoExclosure$Anthro))
+{
+  eval(parse(text = paste("A.", anthro, ".N <- NULL", sep = "")))
+  eval(parse(text = paste("I.", anthro, ".N <- NULL", sep = "")))
+  eval(parse(text = paste("K.", anthro, ".N <- NULL", sep = "")))
+  
+#  eval(parse(text = paste("A.", anthro, ".AbsBias <- NULL", sep = "")))
+#  eval(parse(text = paste("I.", anthro, ".AbsBias <- NULL", sep = "")))
+#  eval(parse(text = paste("K.", anthro, ".AbsBias <- NULL", sep = "")))
+  
+  data <- dataNoExclosure[ which(dataNoExclosure$Anthro == anthro), ]
+  for (i in unique(data$Run))
+  {
+    dataTemp <- data[ which(data$Run == i), ]
+    fit <- nlsfit(dataTemp[c("Day", "Mean.Weight")], model=10, start=c(200,4,0.05))
+
+    #Push parameter estimates
+    eval(parse(text = paste("A.", 
+                            anthro, 
+                            ".N <- c(
+                            eval(parse(text = paste(\"A.\", anthro, \".N\", sep = \"\"))), 
+                            (fit$Parameters[1,1]))", 
+                            sep = "")))
+    eval(parse(text = paste("I.", 
+                            anthro, 
+                            ".N <- c(
+                            eval(parse(text = paste(\"I.\", anthro, \".N\", sep = \"\"))), 
+                            (fit$Parameters[2,1]))", 
+                            sep = "")))
+    eval(parse(text = paste("K.", 
+                            anthro, 
+                            ".N <- c(
+                            eval(parse(text = paste(\"K.\", anthro, \".N\", sep = \"\"))), 
+                            (fit$Parameters[3,1]))", 
+                            sep = "")))
+    
+    #Push absolute bias, do we need this?
+#    eval(parse(text = paste("A.", 
+#                            anthro, 
+#                            ".AbsBias <- c(
+#                            eval(parse(text = paste(\"A.\", anthro, \".AbsBias\", sep = \"\"))), 
+#                             (fit$Parameters[1,1] - A.exp))", 
+#                            sep = "")))
+#    eval(parse(text = paste("I.", 
+#                            anthro, 
+#                            ".AbsBias <- c(
+#                            eval(parse(text = paste(\"I.\", anthro, \".AbsBias\", sep = \"\"))), 
+#                             (fit$Parameters[2,1] - I.exp))", 
+#                            sep = "")))
+##    eval(parse(text = paste("K.", 
+#                            anthro, 
+#                            ".AbsBias <- c(
+#                            eval(parse(text = paste(\"K.\", anthro, \".AbsBias\", sep = \"\"))), 
+#                            (fit$Parameters[3,1] - K.exp))", 
+#                            sep = "")))
+    
+  }
+  
+}
+
+#####################################
+# Exclosure Estimate Generation
+#####################################
+
+dataExclosure <- treatmentData[ which(treatmentData$Excl.Rad == "Exclosure"), ]
+
+for (anthro in unique(dataExclosure$Anthro))
+{
+  eval(parse(text = paste("A.", anthro, ".E <- NULL", sep = "")))
+  eval(parse(text = paste("I.", anthro, ".E <- NULL", sep = "")))
+  eval(parse(text = paste("K.", anthro, ".E <- NULL", sep = "")))
+  
+  #  eval(parse(text = paste("A.", anthro, ".AbsBias <- NULL", sep = "")))
+  #  eval(parse(text = paste("I.", anthro, ".AbsBias <- NULL", sep = "")))
+  #  eval(parse(text = paste("K.", anthro, ".AbsBias <- NULL", sep = "")))
+  
+  data <- dataExclosure[ which(dataExclosure$Anthro == anthro), ]
+  for (i in unique(data$Run))
+  {
+    dataTemp <- data[ which(data$Run == i), ]
+    fit <- nlsfit(dataTemp[c("Day", "Mean.Weight")], model=10, start=c(200,4,0.05))
+    
+    #Push parameter estimates
+    eval(parse(text = paste("A.", 
+                            anthro, 
+                            ".E <- c(
+                            eval(parse(text = paste(\"A.\", anthro, \".E\", sep = \"\"))), 
+                            (fit$Parameters[1,1]))", 
+                            sep = "")))
+    eval(parse(text = paste("I.", 
+                            anthro, 
+                            ".E <- c(
+                            eval(parse(text = paste(\"I.\", anthro, \".E\", sep = \"\"))), 
+                            (fit$Parameters[2,1]))", 
+                            sep = "")))
+    eval(parse(text = paste("K.", 
+                            anthro, 
+                            ".E <- c(
+                            eval(parse(text = paste(\"K.\", anthro, \".E\", sep = \"\"))), 
+                            (fit$Parameters[3,1]))", 
+                            sep = "")))
+    
+    #Push absolute bias, do we need this?
+    #    eval(parse(text = paste("A.", 
+    #                            anthro, 
+    #                            ".AbsBias <- c(
+    #                            eval(parse(text = paste(\"A.\", anthro, \".AbsBias\", sep = \"\"))), 
+    #                             (fit$Parameters[1,1] - A.exp))", 
+    #                            sep = "")))
+    #    eval(parse(text = paste("I.", 
+    #                            anthro, 
+    #                            ".AbsBias <- c(
+    #                            eval(parse(text = paste(\"I.\", anthro, \".AbsBias\", sep = \"\"))), 
+    #                             (fit$Parameters[2,1] - I.exp))", 
+    #                            sep = "")))
+    ##    eval(parse(text = paste("K.", 
+    #                            anthro, 
+    #                            ".AbsBias <- c(
+    #                            eval(parse(text = paste(\"K.\", anthro, \".AbsBias\", sep = \"\"))), 
+    #                            (fit$Parameters[3,1] - K.exp))", 
+    #                            sep = "")))
+    
+  }
+  
+}
