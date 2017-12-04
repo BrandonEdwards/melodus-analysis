@@ -60,22 +60,21 @@ for (i in unique(baseData$Run))
   K.Base.AbsBias <- c(K.Base.AbsBias, (fit$Parameters[3,1] - K.exp))
 }
 
-A.Base.RelBias <- A.Base.AbsBias/A.exp
-I.Base.RelBias <- I.Base.AbsBias/I.exp
-K.Base.RelBias <- K.Base.AbsBias/K.exp
+A.Base.RelBias <- (A.Base.AbsBias/A.exp)*100
+I.Base.RelBias <- (I.Base.AbsBias/I.exp)*100
+K.Base.RelBias <- (K.Base.AbsBias/K.exp)*100
 
-baseEstimates <- cbind(A.Base, I.Base, K.Base, 
-                  A.Base.AbsBias, I.Base.AbsBias, K.Base.AbsBias,
-                  A.Base.RelBias, I.Base.RelBias, K.Base.RelBias)
-
+baseEstimates <- cbind(A.Base, I.Base, K.Base)
 baseEstimates <- data.frame(baseEstimates)
+names(baseEstimates) <- c("A.Est", "I.Est", "K.Est")
+write.csv(baseEstimates, "output/fitAnalysis/baseEstimates.csv", row.names = FALSE)
 
-names(baseEstimates) <- c("A.Est", "I.Est", "K.Est",
-                         "A.AbsBias", "I.AbsBias", "K.AbsBias",
-                         "A.RelBias", "I.RelBias", "K.RelBias")
-
-write.csv(baseEstimates, "output/fitAnalysis/baseEstimatesBias.csv", row.names = FALSE)
-
+baseEstimatesBias <- cbind(A.Base.AbsBias, I.Base.AbsBias, K.Base.AbsBias,
+                           A.Base.RelBias, I.Base.RelBias, K.Base.RelBias)
+baseEstimatesBias <- data.frame(baseEstimatesBias)
+names(baseEstimatesBias) <- c("A.AbsBias", "I.AbsBias", "K.AbsBias",
+                             "A.RelBias", "I.RelBias", "K.RelBias")
+write.csv(baseEstimatesBias, "output/fitAnalysis/baseEstimatesBias.csv", row.names = FALSE)
 
 #####################################
 # Non-Exclosure Estimate Generation
@@ -241,5 +240,15 @@ write.csv(exclosureEstimates, "output/fitAnalysis/exclosureEstimates.csv",
           row.names = FALSE)
 
 #####################################
-# Statistical Tests
+# Plots
 #####################################
+
+# Relative bias of base model plots
+png("output/fitAnalysis/relBias.png", width = 7, height = 3, units = "in", res = 300)
+par(mfrow = c(1,3))
+hist(A.Base.RelBias, xlab = "Relative Bias (%)", main = "Relative Bias of\nAsymptotic Mass (A)")
+hist(I.Base.RelBias, xlab = "Relative Bias (%)", main = "Relative Bias of\nInflection Point (I)")
+hist(K.Base.RelBias, xlab = "Relative Bias (%)", main = "Relative Bias of\nGrowth Rate Constant (K)")
+dev.off()
+
+
