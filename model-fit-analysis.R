@@ -52,21 +52,56 @@ hist(baseEstimatesBias$K.RelBias, xlab = "Relative Bias (%)", main = "Relative B
 dev.off()
 
 #####################################
-# Statistical Tests
+# Base Model Statistical Tests
 #####################################
 
 # Simualated Day 31 vs Target
 day31Data <- baseData[ which(baseData$Day == 31), ]
 chars <- capture.output(print(t.test(day31Data$Mean.Weight, mu = 53.4*exp(-exp(-0.084*(31-11.271))))))
-writeLines(chars, con = file("output/fitAnalysis/tests/meanSimDay31VsTarget.txt"))
-
+writeLines(chars, con = file("output/fitAnalysis/tests/base/meanSimDay31VsTarget.txt"))
 
 # Mean Simulated Growth Rate Constant vs. Target
-chars <- capture.output(print(t.test(baseEstimates$K.Est, mu = 0.084)))
-writeLines(chars, con = file("output/fitAnalysis/tests/meanSimGrowthRateVsTarget.txt"))
+chars <- capture.output(print(t.test(baseEstimates$K.Est, mu = K.exp)))
+writeLines(chars, con = file("output/fitAnalysis/tests/base/meanSimGrowthRateVsTarget.txt"))
 
 # Mean Simulated Mass Asymptote vs. Target
-chars <- capture.output(print(t.test(baseEstimates$A.Est, mu = 53.3)))
-writeLines(chars, con = file("output/fitAnalysis/tests/meanSimMassAsympVsTarget.txt"))
+chars <- capture.output(print(t.test(baseEstimates$A.Est, mu = A.exp)))
+writeLines(chars, con = file("output/fitAnalysis/tests/base/meanSimMassAsympVsTarget.txt"))
+
+# Mean Simulated Inflection vs Target
+chars <- capture.output(print(t.test(baseEstimates$I.Est, m = I.exp)))
+writeLines(chars, con = file("output/fitAnalysis/tests/base/meanSimInflectionVsTarget.txt"))
+
+closeAllConnections()
+
+#####################################
+# Anthro Presence Statistical Tests
+#####################################
+
+noExclosureData <- treatmentData[ which(treatmentData$Excl.Rad == "No Exclosure"), ]
+
+for (anthro in unique(noExclosureData$Anthro))
+{
+  # Simulated Day 31 vs Base 31
+  data <- noExclosureData[ which(noExclosureData$Anthro == anthro), ]
+  data <- data[ which(data$Day == 31), ]
+  chars <- capture.output(print(t.test(day31Data$Mean.Weight, data$Mean.Weight)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/anthro/", 
+                                     anthro, "/31Day.txt", sep="")))
+  
+  # Anthro Asymptotic Mass vs Base
+  data1 <- baseEstimates$A.Est
+  data2 <- eval(parse(text = paste("noExclosureEstimates$A.", anthro, sep="")))
+  chars <- capture.output(print(t.test(data1, data2)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/anthro/", 
+                                     anthro, "/meanMassAsymptoteEstimate.txt", sep="")))
+  
+  # Anthro Asymptotic Mass vs Base
+  data1 <- baseEstimates$K.Est
+  data2 <- eval(parse(text = paste("noExclosureEstimates$K.", anthro, sep="")))
+  chars <- capture.output(print(t.test(data1, data2)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/anthro/", 
+                                     anthro, "/meanGrowthEstimate.txt", sep="")))
+}
 
 closeAllConnections()
