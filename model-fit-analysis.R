@@ -105,3 +105,35 @@ for (anthro in unique(noExclosureData$Anthro))
 }
 
 closeAllConnections()
+
+#####################################
+# Exclosure Statistical Tests
+#####################################
+
+exclosureData <- treatmentData[ which(treatmentData$Excl.Rad == "Exclosure"), ]
+
+for (anthro in unique(exclosureData$Anthro))
+{
+  # Simulated Day 31 vs Base 31
+  data <- exclosureData[ which(exclosureData$Anthro == anthro), ]
+  data <- data[ which(data$Day == 31), ]
+  chars <- capture.output(print(t.test(day31Data$Mean.Weight, data$Mean.Weight)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/exclosure/", 
+                                     anthro, "/31Day.txt", sep="")))
+  
+  # Anthro Asymptotic Mass vs Base
+  data1 <- baseEstimates$A.Est
+  data2 <- eval(parse(text = paste("exclosureEstimates$A.", anthro, sep="")))
+  chars <- capture.output(print(t.test(data1, data2)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/exclosure/", 
+                                     anthro, "/meanMassAsymptoteEstimate.txt", sep="")))
+  
+  # Anthro Asymptotic Mass vs Base
+  data1 <- baseEstimates$K.Est
+  data2 <- eval(parse(text = paste("exclosureEstimates$K.", anthro, sep="")))
+  chars <- capture.output(print(t.test(data1, data2)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/exclosure/", 
+                                     anthro, "/meanGrowthEstimate.txt", sep="")))
+}
+
+closeAllConnections()
