@@ -137,3 +137,36 @@ for (anthro in unique(exclosureData$Anthro))
 }
 
 closeAllConnections()
+
+#####################################
+# Exclosure vs. Non Statistical Tests
+#####################################
+
+exclosureData <- treatmentData[ which(treatmentData$Excl.Rad == "Exclosure"), ]
+noExclosureData <- treatmentData[ which(treatmentData$Excl.Rad == "No Exclosure"), ]
+
+for (anthro in unique(treatmentData$Anthro))
+{
+  # Day 31 Chick weight
+  data1 <- noExclosureData[ which(noExclosureData$Anthro == anthro), ]
+  data1 <- data1[ which(data1$Day == 31), ]
+  data2 <- exclosureData[ which(exclosureData$Anthro == anthro), ]
+  data2 <- data2[ which(data2$Day == 31), ]
+  chars <- capture.output(print(t.test(data1$Mean.Weight, data2$Mean.Weight)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/interaction/",
+                                     anthro, "/31Day.txt", sep = "")))
+  
+  # Asymptotic mass
+  data1 <- eval(parse(text = paste("noExclosureEstimates$A.", anthro, sep="")))
+  data2 <- eval(parse(text = paste("exclosureEstimates$A.", anthro, sep="")))
+  chars <- capture.output(print(t.test(data1, data2)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/interaction/",
+                                     anthro, "/meanMassAsymptoteEstimate.txt", sep = "")))
+  
+  # Growth Rate
+  data1 <- eval(parse(text = paste("noExclosureEstimates$K.", anthro, sep="")))
+  data2 <- eval(parse(text = paste("exclosureEstimates$K.", anthro, sep="")))
+  chars <- capture.output(print(t.test(data1, data2)))
+  writeLines(chars, con = file(paste("output/fitAnalysis/tests/interaction/",
+                                     anthro, "/meanGrowthEstimate.txt", sep = "")))  
+}
